@@ -39,7 +39,7 @@ const Header = () => {
    cursor={'pointer'}
    alt='logo'
    src={logo}
-   w={20}
+   w={10}
   />
   {user && (
 				<Flex alignItems={"center"} gap={4}>

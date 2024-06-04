@@ -19,6 +19,8 @@ import {
   import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import authScreenAtom from '../atoms/authAtom';
 import { useSetRecoilState } from 'recoil';
+import useShowToast from '../hooks/useShowToast';
+import userAtom from '../atoms/userAtom';
   
   export default function SignupCard() {
     const [showPassword, setShowPassword] = useState(false);
@@ -30,35 +32,32 @@ import { useSetRecoilState } from 'recoil';
          email: '',
          password: '',
     })
-    const toast = useToast();
+    
+    const showToast = useShowToast();
+    const setUser = useSetRecoilState(userAtom);
 
     const handleSignup = async () => {
-    // console.log(inputs)
       try {
-        const res = await fetch("/api/users/signup",{
+        const res = await fetch("/api/users/signup", {
           method: "POST",
           headers: {
-            'Content-Type': "application/json",
+            "Content-Type": "application/json",
           },
-           body: JSON.stringify(inputs)
-        })
-        const data = await res.json()
-        console.log("data",data);
-        if(data.error){
-          toast({
-            title: "Error",
-            description: data.error,
-            status: "error",
-            duration: 3000,
-            isClosable: true,
-          })
-          return
-        }     
-        localStorage.setItem("user-info",JSON.stringify(data));
+          body: JSON.stringify(inputs),
+        });
+        const data = await res.json();
+  
+        if (data.error) {
+          showToast("Error", data.error, "error");
+          return;
+        }
+  
+        localStorage.setItem("user-info", JSON.stringify(data));
+        setUser(data);
       } catch (error) {
-        console.log("Error in signup",error)
+        showToast("Error", error, "error");
       }
-    }
+    };
   
     return (
       <Flex
@@ -101,7 +100,7 @@ import { useSetRecoilState } from 'recoil';
                   </FormControl>
                 </Box>
               </HStack>
-              <HStack>
+              <HStack w={"full"}>
               <Box>
                   <FormControl>
                     <FormLabel>Address</FormLabel>
